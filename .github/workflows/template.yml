@@ -1,0 +1,46 @@
+# This GitHub Actions workflow replaces the default "Initial commit" message
+# with a message that follows the Conventional Commits standard.
+
+# This workflow file will also delete itself as part of the process to keep your new repositories clean.
+
+name: Template
+
+on:
+  create:
+
+env:
+  FIRST_EVER_COMMIT_MESSAGE: "feat: initialize project"
+
+jobs:
+  initialize_template:
+    name: Template Initialization
+    if: ${{ !github.event.repository.is_template }}
+    permissions: write-all
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Count commits
+        id: count-commits
+        run: |
+          commit_count=$(git rev-list --count HEAD)
+          echo "Commit count: $commit_count"
+          echo "GIT_COMMIT_COUNT=$commit_count" >> $GITHUB_ENV
+
+      - name: Initialize template
+        if: env.GIT_COMMIT_COUNT == 1
+        run: |
+          # Delete this GitHub Actions workflow file
+          rm -f .github/workflows/template.yml
+
+      - name: Amend first ever commit (message)
+        if: env.GIT_COMMIT_COUNT == 1
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: ${{ env.FIRST_EVER_COMMIT_MESSAGE }}
+          commit_options: "--amend"
+          push_options: "--force"
+          skip_fetch: true
