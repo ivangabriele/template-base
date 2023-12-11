@@ -38,7 +38,7 @@ jobs:
 
       - name: Amend first ever commit (message)
         if: env.GIT_COMMIT_COUNT == 1
-        uses: stefanzweifel/git-auto-commit-action@v4
+        uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: ${{ env.FIRST_EVER_COMMIT_MESSAGE }}
           commit_options: "--amend"
